@@ -1,6 +1,7 @@
 .DS_Store
 .idea/
-lib/
+lib/bower.js
+lib/bower.css
 node_modules/
 bower_components/
 zone_pngs/
