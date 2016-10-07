@@ -1,6 +1,6 @@
-# myZoneReporter
+# kTubeAdmin
 =======
-<h3> This is a very good example on how to use npm, bower, grunt together to manage all the javascript and css dependencies of you html page. </h3> 
+<h3> use Angularjs to create an admin page to manage data for kTube, cloned from zoneReporter </h3> 
 =======
 Example Usage:
 
