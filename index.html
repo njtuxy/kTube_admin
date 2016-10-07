@@ -1,0 +1,205 @@
+<!doctype html>
+<head>
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js" xmlns="http://www.w3.org/1999/html"></script>
+    <!--<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>-->
+    <link rel="stylesheet" type="text/css" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootswatch/3.2.0/sandstone/bootstrap.min.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+    <script src="./bower_components/spin.js/spin.js"></script>
+    <script src="./bower_components/angular-spinner/angular-spinner.js"></script>
+    <script src="./bower_components/ngDialog/js/ngDialog.js"></script>
+    <link rel="stylesheet" href="./bower_components/ngDialog/css/ngDialog.css">
+    <link rel="stylesheet" href="./bower_components/ngDialog/css/ngDialog-theme-plain.css">
+    <script src="./lib/zone_report_helper.js"></script>
+
+
+    <style type="text/css">
+        .sortorder:after {
+            content: '\25b2';
+        }
+
+        .sortorder.reverse:after {
+            content: '\25bc';
+        }
+
+        .colorLink a {
+            color: orange !important;
+        }
+
+        .redBg {
+            background-color: #FF6666;
+        }
+
+        .orangeBg {
+            background-color: #ffc529;
+        }
+
+        .greenBg {
+            background-color: #96cca6;
+        }
+
+        table {
+            table-layout: fixed;
+            word-wrap: break-word;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+<div ng-app="zone_report">
+
+    <div ng-controller="request_controller">
+
+        <div ng-hide="result_for_table.length > 0">
+            <span us-spinner></span>
+        </div>
+
+        <div ng-init="outerIndex = 'xxxxxx'"> </div>
+
+        <div ng-show="result_for_table.length > 0" class="table-responsive">
+            <h3 class="events text-center text-primary">SWAT Zone Report - Update at {{updateTime}}</h3>
+
+            <form>
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon"><i class="fa fa-search"></i></div>
+                        <input type="text" class="form-control" placeholder="Search a zone" ng-model="searchAZone" ng-model-options="{debounce: 500}">
+                    </div>
+                </div>
+            </form>
+
+            <table class="table table-bordered table-hover table-condensed">
+                <tr>
+                    <th>
+                        <a href="" ng-click="order('Name')">Zone</a>
+                        <span class="sortorder" ng-show="predicate === 'Name'" ng-class="{reverse:reverse}"></span>
+                    </th>
+
+
+                    <th ng-repeat="zone_property in zone_properties track by $index">
+                        <a href="" ng-click="order(zone_property)">{{zone_property}}</a>
+                        <span class="sortorder" ng-show="predicate === zone_property"
+                              ng-class="{reverse:reverse}"></span>
+                    </th>
+
+                </tr>
+
+                <tr>
+                    <th>
+                        <div class="colorLink">
+                            <label>Show Last 5 values
+                                <input type="checkbox" ng-model="showPreviousValues">
+                            </label>
+                        </div>
+                    </th>
+
+
+                <tr ng-repeat="zone_record in zone_records | orderBy:predicate:reverse | filter:searchAZone">
+
+                    <td>
+                        <a href=""  title="click to see the screenshot" ng-click="clickToOpenMe(zone_record.Name)">{{zone_record.Name}} </a>
+                    </td>
+
+                    <td ng-init="value1 = zone_record.TileCount"
+                        ng-class="{'greenBg':  value1<= 400 , 'orangeBg': (value1 > 400) && (value1 < 450), 'redBg': value1 >= 450} ">
+                        {{zone_record.TileCount}}
+                        <div ng-show="showPreviousValues">
+                            <div class="container" ng-repeat="n in zone_record.P_TileCount track by $index" ng-if="$index >= 1">
+                                {{n}}&#160 &#64 {{zone_record.P__created_on[$index] | getDate}}
+                            </div>
+                        </div>
+                    </td>
+
+                    <td>
+                        {{zone_record.TotalGameObjects}}
+                        <div class="check-element animate-show" ng-show="showPreviousValues">
+                            <div class="container" ng-repeat="n in zone_record.P_TotalGameObjects track by $index" ng-if="$index >= 1">
+                                {{n}}&#160 &#64 {{zone_record.P__created_on[$index] | getDate}}
+                            </div>
+                        </div>
+                    </td>
+
+                    <td>
+                        {{zone_record.SizeOnDisk}}
+                        <div ng-show="showPreviousValues">
+                            <div class="container" ng-repeat="n in zone_record.P_SizeOnDisk track by $index" ng-if="$index >= 1">
+                                {{n}}&#160 &#64 {{zone_record.P__created_on[$index] | getDate}}
+                            </div>
+                        </div>
+                    </td>
+
+                    <td ng-init="value = zone_record.Verts"
+                        ng-class="{'greenBg':  value<= 75000 , 'orangeBg': (value > 75000) && (value < 80000), 'redBg': value >= 80000} ">
+                        {{zone_record.Verts}}
+                        <div ng-show="showPreviousValues">
+                            <div class="container" ng-repeat="n in zone_record.P_Verts track by $index" ng-if="$index >= 1">
+                                {{n}}&#160 &#64 {{zone_record.P__created_on[$index] | getDate}}
+                            </div>
+                        </div>
+                    </td>
+
+                    <td>
+                        {{zone_record.Components}}
+                        <div ng-show="showPreviousValues">
+                            <div class="container" ng-repeat="n in zone_record.P_Components track by $index" ng-if="$index >= 1">
+                                {{n}}&#160 &#64 {{zone_record.P__created_on[$index] | getDate}}
+                            </div>
+                        </div>
+
+                    </td>
+
+                    <td>
+                        {{zone_record.PlaymakerObjects}}
+                        <div ng-show="showPreviousValues">
+                            <div class="container" ng-repeat="n in zone_record.P_PlaymakerObjects track by $index" ng-if="$index >= 1">
+                                {{n}}&#160 &#64 {{zone_record.P__created_on[$index] | getDate}}
+                            </div>
+                        </div>
+
+                    </td>
+
+                    <td>
+                        {{zone_record.PlaymakerEvents}}
+                        <div ng-show="showPreviousValues">
+                            <div class="container" ng-repeat="n in zone_record.P_PlaymakerEvents track by $index" ng-if="$index >= 1">
+                                {{n}}&#160 &#64 {{zone_record.P__created_on[$index] | getDate}}
+                            </div>
+                        </div>
+
+                    </td>
+
+                    <td>
+                        {{zone_record.EnemySpawners}}
+                        <div ng-show="showPreviousValues">
+                            <div class="container" ng-repeat="n in zone_record.P_EnemySpawners track by $index" ng-if="$index >= 1">
+                                {{n}}&#160 &#64 {{zone_record.P__created_on[$index] | getDate}}
+                            </div>
+                        </div>
+
+                    </td>
+
+                    <td>
+                        {{zone_record.Breakables}}
+                        <div ng-show="showPreviousValues">
+                            <div class="container" ng-repeat="n in zone_record.P_Breakables track by $index" ng-if="$index >= 1">
+                                {{n}}&#160 &#64 {{zone_record.P__created_on[$index] | getDate}}
+                            </div>
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            </table>
+        </div>
+    </div>
+
+
+</div>
+
+</body>
+</html>
